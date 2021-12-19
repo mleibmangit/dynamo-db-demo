@@ -8,6 +8,7 @@ public class DynamoDbDemoApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(DynamoDbDemoApplication.class, args);
+
 	}
 
 }
