@@ -1,6 +1,7 @@
 package com.michael.dynamodbdemo.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -8,6 +9,7 @@ import lombok.ToString;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
+@Builder
 @ToString
 @EqualsAndHashCode
 @Getter

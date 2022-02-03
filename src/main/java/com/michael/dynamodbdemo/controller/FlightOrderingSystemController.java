@@ -1,6 +1,7 @@
 package com.michael.dynamodbdemo.controller;
 
 import com.michael.dynamodbdemo.controller.model.CreatedObjectResponse;
+import com.michael.dynamodbdemo.controller.model.SearchFlightsRequest;
 import com.michael.dynamodbdemo.model.*;
 import com.michael.dynamodbdemo.repository.FlightOrderingSystemRepository;
 import com.michael.dynamodbdemo.service.FlightOrderingSystemService;
@@ -9,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RequestMapping
@@ -48,9 +51,9 @@ public class FlightOrderingSystemController {
         return ResponseEntity.ok(new CreatedObjectResponse(flightOrderingSystemService.addFlight(flight), CreatedObjectResponse.ObjectType.FLIGHT));
     }
 
-    @PostMapping(value = "order", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Ticket> orderBestFlight(@RequestBody DesiredFlight desiredFlight) {
-        log.debug("got orderBestFlight request {}", desiredFlight);
-        return ResponseEntity.ok(flightOrderingSystemService.buyTicketForTheBestFlight(desiredFlight));
+    @PostMapping(value = "searchFlights", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Flight>> searchFlights(@RequestBody SearchFlightsRequest searchFlightsRequest) {
+        log.debug("got searchFlights request {}", searchFlightsRequest);
+        return ResponseEntity.ok(flightOrderingSystemService.searchFlights(searchFlightsRequest));
     }
 }

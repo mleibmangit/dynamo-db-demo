@@ -1,9 +1,12 @@
 package com.michael.dynamodbdemo.service;
 
+import com.michael.dynamodbdemo.controller.model.SearchFlightsRequest;
 import com.michael.dynamodbdemo.model.*;
 import com.michael.dynamodbdemo.repository.FlightOrderingSystemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class FlightOrderingSystemService {
@@ -30,7 +33,7 @@ public class FlightOrderingSystemService {
         return "";
     }
 
-    public Ticket buyTicketForTheBestFlight(DesiredFlight desiredFlight) {
-        return null;
+    public List<Flight> searchFlights(SearchFlightsRequest searchFlightsRequest) {
+        return flightOrderingSystemRepository.searchFlights(searchFlightsRequest);
     }
 }

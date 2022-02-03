@@ -1,5 +1,6 @@
 package com.michael.dynamodbdemo.repository;
 
+import com.michael.dynamodbdemo.controller.model.SearchFlightsRequest;
 import com.michael.dynamodbdemo.model.Flight;
 import com.michael.dynamodbdemo.model.Passenger;
 import com.michael.dynamodbdemo.model.Plane;
@@ -7,11 +8,17 @@ import com.michael.dynamodbdemo.repository.entity.FlightOrderingSystem;
 import com.michael.dynamodbdemo.repository.entity.Music;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
-import software.amazon.awssdk.enhanced.dynamodb.Key;
-import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.core.pagination.sync.SdkIterable;
+import software.amazon.awssdk.enhanced.dynamodb.*;
 import software.amazon.awssdk.enhanced.dynamodb.model.DescribeTableEnhancedResponse;
+import software.amazon.awssdk.enhanced.dynamodb.model.Page;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class FlightOrderingSystemRepository {
@@ -61,9 +68,34 @@ public class FlightOrderingSystemRepository {
                 .departureTime(flight.getDepartureTime())
                 .arrivalTime(flight.getArrivalTime())
                 .ticketPrice(flight.getTicketPrice())
-                .gsi1pk(ObjectType.PLANE + "#" + flight.getPlaneId())
-                .gsi1sk(ObjectType.PLANE + "#" + flight.getPlaneId())
+                .gsi1pk(ObjectType.AIRPORT + "#" + flight.getDepartureAirport() + "#" + flight.getArrivalAirport())
+                .gsi1sk(ObjectType.FLIGHT + "#" + flight.getNumber())
                 .build());
+    }
+
+    public List<Flight> searchFlights(SearchFlightsRequest searchFlightsRequest) {
+
+        DynamoDbIndex<FlightOrderingSystem> gsi1 = flightOrderingSystemDynamoDbTable.index("GSI1");
+
+        SdkIterable<Page<FlightOrderingSystem>> pages = gsi1.query(QueryConditional.keyEqualTo(Key.builder()
+                .partitionValue(ObjectType.AIRPORT + "#" + searchFlightsRequest.getDepartureAirport() + "#" + searchFlightsRequest.getArrivalAirport())
+                .build()));
+
+        return pages.stream()
+                .map(Page::items)
+                .flatMap(Collection::stream)
+                .map(fos -> Flight
+                        .builder()
+                        .arrivalAirport(fos.getArrivalAirport())
+                        .departureAirport(fos.getDepartureAirport())
+                        .arrivalTime(fos.getArrivalTime())
+                        .departureTime(fos.getDepartureTime())
+                        .number(fos.getPk())
+                        .operator(fos.getOperator())
+                        .planeId("TODO COMPLETE NAN")
+                        .ticketPrice(fos.getTicketPrice())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     public void test() {
