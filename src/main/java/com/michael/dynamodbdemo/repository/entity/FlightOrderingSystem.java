@@ -78,7 +78,7 @@ public class FlightOrderingSystem {
         return arrivalAirport;
     }
 
-    @DynamoDbAttribute("departureTime")
+    @DynamoDbAttribute("departureDate")
     public ZonedDateTime getDepartureTime() {
         return departureTime;
     }

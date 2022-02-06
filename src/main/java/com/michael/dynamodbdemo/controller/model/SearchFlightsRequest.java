@@ -16,16 +16,24 @@ import java.time.ZonedDateTime;
 public class SearchFlightsRequest {
     private final String departureAirport;
     private final String arrivalAirport;
-    private final ZonedDateTime departureTime;
-    private final ZonedDateTime  arrivingTime;
+    private final ZonedDateTime departureDate;
+    private final ZonedDateTime returnDate;
+    private final TripType tripType;
     private final BigDecimal maxPrice;
 
     @JsonCreator
-    public SearchFlightsRequest(String departureAirport, String arrivingAirport, ZonedDateTime departureTime, ZonedDateTime arrivingTime, BigDecimal maxPrice) {
+    public SearchFlightsRequest(String departureAirport, String arrivingAirport,
+                                ZonedDateTime departureDate, ZonedDateTime returnDate,
+                                TripType tripType, BigDecimal maxPrice) {
         this.departureAirport = departureAirport;
         this.arrivalAirport = arrivingAirport;
-        this.departureTime = departureTime;
-        this.arrivingTime = arrivingTime;
+        this.departureDate = departureDate;
+        this.returnDate = returnDate;
+        this.tripType = tripType;
         this.maxPrice = maxPrice;
+    }
+
+    public enum TripType {
+        ROUND_TRIP, ONE_WAY
     }
 }

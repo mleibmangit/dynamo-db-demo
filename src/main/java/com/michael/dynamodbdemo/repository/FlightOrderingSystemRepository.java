@@ -15,6 +15,8 @@ import software.amazon.awssdk.enhanced.dynamodb.model.Page;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 public class FlightOrderingSystemRepository {
 
     private static final String TABLE_NAME = "FlightOrderingSystem";
+    private static final DateTimeFormatter dateTimeFormatterDate = DateTimeFormatter.ISO_LOCAL_DATE;
 
     private final DynamoDbEnhancedClient dynamoDbenhancedClient;
     private final DynamoDbTable<FlightOrderingSystem> flightOrderingSystemDynamoDbTable;
@@ -69,7 +72,7 @@ public class FlightOrderingSystemRepository {
                 .arrivalTime(flight.getArrivalTime())
                 .ticketPrice(flight.getTicketPrice())
                 .gsi1pk(ObjectType.AIRPORT + "#" + flight.getDepartureAirport() + "#" + flight.getArrivalAirport())
-                .gsi1sk(ObjectType.FLIGHT + "#" + flight.getNumber())
+                .gsi1sk(ObjectType.DATE + "#" + dateTimeFormatterDate.format(flight.getDepartureTime().truncatedTo(ChronoUnit.DAYS)))
                 .build());
     }
 
@@ -79,6 +82,7 @@ public class FlightOrderingSystemRepository {
 
         SdkIterable<Page<FlightOrderingSystem>> pages = gsi1.query(QueryConditional.keyEqualTo(Key.builder()
                 .partitionValue(ObjectType.AIRPORT + "#" + searchFlightsRequest.getDepartureAirport() + "#" + searchFlightsRequest.getArrivalAirport())
+                .sortValue(prepareDateSearchExpression(searchFlightsRequest))
                 .build()));
 
         return pages.stream()
@@ -96,6 +100,15 @@ public class FlightOrderingSystemRepository {
                         .ticketPrice(fos.getTicketPrice())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    private String prepareDateSearchExpression(SearchFlightsRequest searchFlightsRequest) {
+
+        if (searchFlightsRequest.getTripType() == SearchFlightsRequest.TripType.ONE_WAY) {
+            return ObjectType.DATE + "#" + dateTimeFormatterDate.format(searchFlightsRequest.getDepartureDate().truncatedTo(ChronoUnit.DAYS));
+        } else {
+            return ObjectType.DATE + "#" + dateTimeFormatterDate.format(searchFlightsRequest.getDepartureDate().truncatedTo(ChronoUnit.DAYS));
+        }
     }
 
     public void test() {
