@@ -1,7 +1,7 @@
 # dynamodb demo
 
 1) Requirements
-2) Data modeling: single table, streams, indexes, transactions, optimistic locking, TTL
+2) Data modeling: single table, streams, indexes, transactions, optimistic locking, TTL, ConditionExpression
 3) Code
 4) Deployment, docker/docker compose
 
