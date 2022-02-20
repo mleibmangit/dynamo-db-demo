@@ -43,6 +43,7 @@ public class FlightOrderingSystemRepository {
                 .builder()
                 .pk(ObjectType.PLANE + "#" + plane.getId())
                 .sk(ObjectType.PLANE + "#" + plane.getId())
+                .entityType(ObjectType.PLANE.name())
                 .planeType(plane.getType())
                 .numberOfSeats(plane.getNumberOfSeats())
                 .build());
@@ -50,12 +51,19 @@ public class FlightOrderingSystemRepository {
 
     public void addPassenger(Passenger passenger) {
 
-        flightOrderingSystemDynamoDbTable.putItem(FlightOrderingSystem
-                .builder()
-                .pk(ObjectType.PASSENGER + "#" + passenger.getUid())
-                .sk(ObjectType.PASSENGER + "#" + passenger.getUid())
-                .firstName(passenger.getFirstName())
-                .lastName(passenger.getLastName())
+        flightOrderingSystemDynamoDbTable.putItem(PutItemEnhancedRequest
+                .builder(FlightOrderingSystem.class)
+                .item(FlightOrderingSystem
+                        .builder()
+                        .pk(ObjectType.PASSENGER + "#" + passenger.getUid())
+                        .sk(ObjectType.PASSENGER + "#" + passenger.getUid())
+                        .entityType(ObjectType.PASSENGER.name())
+                        .firstName(passenger.getFirstName())
+                        .lastName(passenger.getLastName())
+                        .build())
+                .conditionExpression(Expression.builder()
+                        .expression("attribute_not_exists(PK)")
+                        .build())
                 .build());
     }
 
@@ -65,6 +73,7 @@ public class FlightOrderingSystemRepository {
                 .builder()
                 .pk(ObjectType.FLIGHT + "#" + flight.getNumber())
                 .sk(ObjectType.FLIGHT + "#" + flight.getNumber())
+                .entityType(ObjectType.FLIGHT.name())
                 .departureAirport(flight.getDepartureAirport())
                 .arrivalAirport(flight.getArrivalAirport())
                 .departureTime(flight.getDepartureTime())
@@ -125,7 +134,7 @@ public class FlightOrderingSystemRepository {
                 .sortValue("Changes")
                 .build());
         int i = 0;
-        musicTable.updateItem(UpdateItemEnhancedRequest.<Music>builder().build());
-        musicTable.query(QueryEnhancedRequest.builder().build())
+      /*  musicTable.updateItem(UpdateItemEnhancedRequest.<Music>builder().build());
+        musicTable.query(QueryEnhancedRequest.builder().build())*/
     }
 }

@@ -18,6 +18,7 @@ public class FlightOrderingSystem {
     private String gsi1pk;
     private String gsi1sk;
 
+    private String entityType;
     private String planeType;
     private int numberOfSeats;
 
@@ -41,6 +42,11 @@ public class FlightOrderingSystem {
     @DynamoDbAttribute("SK")
     public String getSk() {
         return sk;
+    }
+
+    @DynamoDbAttribute("EntityType")
+    public String getEntityType() {
+        return entityType;
     }
 
     @DynamoDbAttribute("PlaneType")
