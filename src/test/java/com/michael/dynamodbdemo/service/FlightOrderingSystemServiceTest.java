@@ -8,6 +8,8 @@ import com.michael.dynamodbdemo.model.Flight;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -39,13 +41,13 @@ class FlightOrderingSystemServiceTest {
                 .builder()
                 .arrivalAirport("Moscow")
                 .departureAirport("London")
-                .departureDate(ZonedDateTime.now().minusDays(5))
+                .departureDate(ZonedDateTime.now(ZoneOffset.UTC).minusDays(5))
                 .returnDate(ZonedDateTime.now().minusDays(2))
                 .tripType(SearchFlightsRequest.TripType.ONE_WAY)
                 .build()));
 
 
-        System.out.println(dateTimeFormatter.format(ZonedDateTime.now().plusDays(5).truncatedTo(ChronoUnit.DAYS)));
+        System.out.println(dateTimeFormatter.format(ZonedDateTime.now(ZoneOffset.UTC).plusDays(5).truncatedTo(ChronoUnit.DAYS)));
         System.out.println(dateTimeFormatter.format(ZonedDateTime.now().plusDays(15).truncatedTo(ChronoUnit.DAYS)));
 
         System.out.println(dateTimeFormatter.format(ZonedDateTime.now().plusDays(5).truncatedTo(ChronoUnit.HOURS)));

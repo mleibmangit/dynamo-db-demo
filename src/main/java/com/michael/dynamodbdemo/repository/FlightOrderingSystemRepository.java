@@ -10,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.core.pagination.sync.SdkIterable;
 import software.amazon.awssdk.enhanced.dynamodb.*;
-import software.amazon.awssdk.enhanced.dynamodb.model.DescribeTableEnhancedResponse;
-import software.amazon.awssdk.enhanced.dynamodb.model.Page;
-import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
-import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
+import software.amazon.awssdk.enhanced.dynamodb.model.*;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -128,5 +125,7 @@ public class FlightOrderingSystemRepository {
                 .sortValue("Changes")
                 .build());
         int i = 0;
+        musicTable.updateItem(UpdateItemEnhancedRequest.<Music>builder().build());
+        musicTable.query(QueryEnhancedRequest.builder().build())
     }
 }

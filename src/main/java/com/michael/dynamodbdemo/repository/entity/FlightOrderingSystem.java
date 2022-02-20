@@ -63,44 +63,44 @@ public class FlightOrderingSystem {
         return lastName;
     }
 
-    @DynamoDbAttribute("operator")
+    @DynamoDbAttribute("Operator")
     public String getOperator() {
         return operator;
     }
 
-    @DynamoDbAttribute("departureAirport")
+    @DynamoDbAttribute("DepartureAirport")
     public String getDepartureAirport() {
         return departureAirport;
     }
 
-    @DynamoDbAttribute("arrivalAirport")
+    @DynamoDbAttribute("ArrivalAirport")
     public String getArrivalAirport() {
         return arrivalAirport;
     }
 
-    @DynamoDbAttribute("departureDate")
+    @DynamoDbAttribute("DepartureDate")
     public ZonedDateTime getDepartureTime() {
         return departureTime;
     }
 
-    @DynamoDbAttribute("arrivalTime")
+    @DynamoDbAttribute("ArrivalTime")
     public ZonedDateTime getArrivalTime() {
         return arrivalTime;
     }
 
-    @DynamoDbAttribute("ticketPrice")
+    @DynamoDbAttribute("TicketPrice")
     public BigDecimal getTicketPrice() {
         return ticketPrice;
     }
 
     @DynamoDbSecondaryPartitionKey(indexNames = "GSI1")
-    @DynamoDbAttribute("GSI1PK")
+    @DynamoDbAttribute("GSI1-PK")
     public String getGsi1pk() {
         return gsi1pk;
     }
 
     @DynamoDbSecondarySortKey(indexNames = "GSI1")
-    @DynamoDbAttribute("GSI1SK")
+    @DynamoDbAttribute("GSI1-SK")
     public String getGsi1sk() {
         return gsi1sk;
     }
