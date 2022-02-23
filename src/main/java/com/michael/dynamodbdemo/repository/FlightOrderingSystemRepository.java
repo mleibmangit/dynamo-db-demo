@@ -33,19 +33,25 @@ public class FlightOrderingSystemRepository {
     @Autowired
     public FlightOrderingSystemRepository(DynamoDbEnhancedClient dynamoDbenhancedClient) {
         this.dynamoDbenhancedClient = dynamoDbenhancedClient;
-        flightOrderingSystemDynamoDbTable
+        this.flightOrderingSystemDynamoDbTable
                 = dynamoDbenhancedClient.table(TABLE_NAME, TableSchema.fromBean(FlightOrderingSystem.class));
     }
 
     public void addPlane(Plane plane) {
 
-        flightOrderingSystemDynamoDbTable.putItem(FlightOrderingSystem
-                .builder()
-                .pk(ObjectType.PLANE + "#" + plane.getId())
-                .sk(ObjectType.PLANE + "#" + plane.getId())
-                .entityType(ObjectType.PLANE.name())
-                .planeType(plane.getType())
-                .numberOfSeats(plane.getNumberOfSeats())
+        flightOrderingSystemDynamoDbTable.putItem(PutItemEnhancedRequest
+                .builder(FlightOrderingSystem.class)
+                .item(FlightOrderingSystem
+                        .builder()
+                        .pk(ObjectType.PLANE + "#" + plane.getId())
+                        .sk(ObjectType.PLANE + "#" + plane.getId())
+                        .entityType(ObjectType.PLANE.name())
+                        .planeType(plane.getType())
+                        .numberOfSeats(plane.getNumberOfSeats())
+                        .build())
+                .conditionExpression(Expression.builder()
+                        .expression("attribute_not_exists(PK)")
+                        .build())
                 .build());
     }
 
@@ -69,19 +75,61 @@ public class FlightOrderingSystemRepository {
 
     public void addFlight(Flight flight) {
 
-        flightOrderingSystemDynamoDbTable.putItem(FlightOrderingSystem
+        dynamoDbenhancedClient.transactWriteItems(TransactWriteItemsEnhancedRequest
                 .builder()
-                .pk(ObjectType.FLIGHT + "#" + flight.getNumber())
-                .sk(ObjectType.FLIGHT + "#" + flight.getNumber())
-                .entityType(ObjectType.FLIGHT.name())
-                .departureAirport(flight.getDepartureAirport())
-                .arrivalAirport(flight.getArrivalAirport())
-                .departureTime(flight.getDepartureTime())
-                .arrivalTime(flight.getArrivalTime())
-                .ticketPrice(flight.getTicketPrice())
-                .gsi1pk(ObjectType.AIRPORT + "#" + flight.getDepartureAirport() + "#" + flight.getArrivalAirport())
-                .gsi1sk(ObjectType.DATE + "#" + dateTimeFormatterDate.format(flight.getDepartureTime().truncatedTo(ChronoUnit.DAYS)))
+                .addPutItem(flightOrderingSystemDynamoDbTable, FlightOrderingSystem
+                        .builder()
+                        .pk(ObjectType.FLIGHT + "#" + flight.getNumber())
+                        .sk(ObjectType.FLIGHT + "#" + flight.getNumber())
+                        .entityType(ObjectType.FLIGHT.name())
+                        .departureAirport(flight.getDepartureAirport())
+                        .arrivalAirport(flight.getArrivalAirport())
+                        .departureTime(flight.getDepartureTime())
+                        .arrivalTime(flight.getArrivalTime())
+                        .ticketPrice(flight.getTicketPrice())
+                        .gsi1pk(ObjectType.AIRPORT + "#" + flight.getDepartureAirport() + "#" + flight.getArrivalAirport())
+                        .gsi1sk(ObjectType.DATE + "#" + dateTimeFormatterDate.format(flight.getDepartureTime().truncatedTo(ChronoUnit.DAYS)))
+                        .build())
+                .addPutItem(flightOrderingSystemDynamoDbTable, FlightOrderingSystem
+                        .builder()
+                        .pk(ObjectType.FLIGHT + "#" + flight.getNumber())
+                        .sk(ObjectType.PLANE + "#" + flight.getPlaneId())
+                        .entityType(ObjectType.PLANE.name())
+                        .build())
                 .build());
+
+/*        flightOrderingSystemDynamoDbTable.putItem(PutItemEnhancedRequest
+                .builder(FlightOrderingSystem.class)
+                .item(FlightOrderingSystem
+                        .builder()
+                        .pk(ObjectType.FLIGHT + "#" + flight.getNumber())
+                        .sk(ObjectType.FLIGHT + "#" + flight.getNumber())
+                        .entityType(ObjectType.FLIGHT.name())
+                        .departureAirport(flight.getDepartureAirport())
+                        .arrivalAirport(flight.getArrivalAirport())
+                        .departureTime(flight.getDepartureTime())
+                        .arrivalTime(flight.getArrivalTime())
+                        .ticketPrice(flight.getTicketPrice())
+                        .gsi1pk(ObjectType.AIRPORT + "#" + flight.getDepartureAirport() + "#" + flight.getArrivalAirport())
+                        .gsi1sk(ObjectType.DATE + "#" + dateTimeFormatterDate.format(flight.getDepartureTime().truncatedTo(ChronoUnit.DAYS)))
+                        .build())
+                .conditionExpression(Expression.builder()
+                        .expression("attribute_not_exists(PK)")
+                        .build())
+                .build());
+
+        flightOrderingSystemDynamoDbTable.putItem(PutItemEnhancedRequest
+                .builder(FlightOrderingSystem.class)
+                .item(FlightOrderingSystem
+                        .builder()
+                        .pk(ObjectType.FLIGHT + "#" + flight.getNumber())
+                        .sk(ObjectType.PLANE + "#" + flight.getPlaneId())
+                        .entityType(ObjectType.PLANE.name())
+                        .build())
+                .conditionExpression(Expression.builder()
+                        .expression("attribute_not_exists(PK)")
+                        .build())
+                .build());*/
     }
 
     public List<Flight> searchFlights(SearchFlightsRequest searchFlightsRequest) {
