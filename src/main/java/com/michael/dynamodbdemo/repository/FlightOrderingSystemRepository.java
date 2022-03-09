@@ -82,6 +82,7 @@ public class FlightOrderingSystemRepository {
                         .pk(ObjectType.FLIGHT + "#" + flight.getNumber())
                         .sk(ObjectType.FLIGHT + "#" + flight.getNumber())
                         .entityType(ObjectType.FLIGHT.name())
+                        .operator(flight.getOperator())
                         .departureAirport(flight.getDepartureAirport())
                         .arrivalAirport(flight.getArrivalAirport())
                         .departureTime(flight.getDepartureTime())
