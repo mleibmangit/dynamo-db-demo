@@ -9,18 +9,19 @@ import lombok.ToString;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
-@Builder
+//@Builder
 @ToString
 @EqualsAndHashCode
 @Getter
 public class OrderRequest {
-    private final String passengerUid;
-    private final String flightNumber;
+    /*private final String passengerUid;
+    private final String flightNumber;*/
     private final String arrivalAirport;
     private final ZonedDateTime departureDate;
     private final ZonedDateTime returnDate;
     private final TripType tripType;
     private final BigDecimal maxPrice;
+    private final String departureAirport;
 
     @JsonCreator
     public OrderRequest(String departureAirport, String arrivingAirport,
