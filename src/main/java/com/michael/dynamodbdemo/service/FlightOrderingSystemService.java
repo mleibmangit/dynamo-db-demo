@@ -36,4 +36,8 @@ public class FlightOrderingSystemService {
     public List<Flight> searchFlights(SearchFlightsRequest searchFlightsRequest) {
         return flightOrderingSystemRepository.searchFlights(searchFlightsRequest);
     }
+
+    public Order buyTicket(SearchFlightsRequest searchFlightsRequest) {
+        return flightOrderingSystemRepository.buyTicket(searchFlightsRequest);
+    }
 }

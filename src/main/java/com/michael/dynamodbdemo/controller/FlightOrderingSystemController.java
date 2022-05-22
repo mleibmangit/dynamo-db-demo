@@ -56,4 +56,10 @@ public class FlightOrderingSystemController {
         log.debug("got searchFlights request {}", searchFlightsRequest);
         return ResponseEntity.ok(flightOrderingSystemService.searchFlights(searchFlightsRequest));
     }
+
+    @PostMapping(value = "buyTicket", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Order> buyTicket(@RequestBody SearchFlightsRequest searchFlightsRequest) {
+        log.debug("got buyTicket request {}", searchFlightsRequest);
+        return ResponseEntity.ok(flightOrderingSystemService.buyTicket(searchFlightsRequest));
+    }
 }

@@ -2,6 +2,7 @@ package com.michael.dynamodbdemo.repository;
 
 import com.michael.dynamodbdemo.controller.model.SearchFlightsRequest;
 import com.michael.dynamodbdemo.model.Flight;
+import com.michael.dynamodbdemo.model.Order;
 import com.michael.dynamodbdemo.model.Passenger;
 import com.michael.dynamodbdemo.model.Plane;
 import com.michael.dynamodbdemo.repository.entity.FlightOrderingSystem;
@@ -169,6 +170,10 @@ public class FlightOrderingSystemRepository {
                         .ticketPrice(fos.getTicketPrice())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    public Order buyTicket(SearchFlightsRequest searchFlightsRequest) {
+        return null;
     }
 
     private String prepareDateSearchExpression(ZonedDateTime flightTime) {
