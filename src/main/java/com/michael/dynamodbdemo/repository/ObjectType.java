@@ -4,5 +4,5 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public enum ObjectType {
-    PLANE, FLIGHT, PASSENGER, AIRPORT, DATE;
+    PLANE, FLIGHT, PASSENGER, AIRPORT, DATE, ORDER;
 }

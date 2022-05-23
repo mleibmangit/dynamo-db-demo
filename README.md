@@ -16,3 +16,7 @@ Rest api:
 5. Find a most suitable flight by date/price/...,
 6. Make an order. (Buy ticket)
 
+docker network create myNetwork
+docker network connect myNetwork DynamoDbDemo
+docker network connect myNetwork dynamodb-local
+

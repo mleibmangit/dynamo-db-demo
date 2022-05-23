@@ -1,5 +1,6 @@
 package com.michael.dynamodbdemo.service;
 
+import com.michael.dynamodbdemo.controller.model.OrderRequest;
 import com.michael.dynamodbdemo.controller.model.SearchFlightsRequest;
 import com.michael.dynamodbdemo.model.*;
 import com.michael.dynamodbdemo.repository.FlightOrderingSystemRepository;
@@ -37,7 +38,7 @@ public class FlightOrderingSystemService {
         return flightOrderingSystemRepository.searchFlights(searchFlightsRequest);
     }
 
-    public Order buyTicket(SearchFlightsRequest searchFlightsRequest) {
-        return flightOrderingSystemRepository.buyTicket(searchFlightsRequest);
+    public Order orderFlight(OrderRequest orderRequest) {
+        return flightOrderingSystemRepository.orderFlight(orderRequest);
     }
 }

@@ -1,12 +1,12 @@
 package com.michael.dynamodbdemo.repository;
 
+import com.michael.dynamodbdemo.controller.model.OrderRequest;
 import com.michael.dynamodbdemo.controller.model.SearchFlightsRequest;
 import com.michael.dynamodbdemo.model.Flight;
 import com.michael.dynamodbdemo.model.Order;
 import com.michael.dynamodbdemo.model.Passenger;
 import com.michael.dynamodbdemo.model.Plane;
 import com.michael.dynamodbdemo.repository.entity.FlightOrderingSystem;
-import com.michael.dynamodbdemo.repository.entity.Music;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.core.pagination.sync.SdkIterable;
@@ -16,9 +16,9 @@ import software.amazon.awssdk.enhanced.dynamodb.model.*;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -76,6 +76,11 @@ public class FlightOrderingSystemRepository {
 
     public void addFlight(Flight flight) {
 
+        FlightOrderingSystem plane = flightOrderingSystemDynamoDbTable.getItem(Key.builder()
+                .partitionValue(ObjectType.PLANE + "#" + flight.getPlaneId())
+                .sortValue(ObjectType.PLANE + "#" + flight.getPlaneId())
+                .build());
+
         dynamoDbenhancedClient.transactWriteItems(TransactWriteItemsEnhancedRequest
                 .builder()
                 .addPutItem(flightOrderingSystemDynamoDbTable, FlightOrderingSystem
@@ -89,6 +94,7 @@ public class FlightOrderingSystemRepository {
                         .departureTime(flight.getDepartureTime())
                         .arrivalTime(flight.getArrivalTime())
                         .ticketPrice(flight.getTicketPrice())
+                        .numberOfSeats(plane.getNumberOfSeats())
                         .gsi1pk(ObjectType.AIRPORT + "#" + flight.getDepartureAirport() + "#" + flight.getArrivalAirport())
                         .gsi1sk(ObjectType.DATE + "#" + dateTimeFormatterDate.format(flight.getDepartureTime().truncatedTo(ChronoUnit.DAYS)))
                         .build())
@@ -172,7 +178,39 @@ public class FlightOrderingSystemRepository {
                 .collect(Collectors.toList());
     }
 
-    public Order buyTicket(SearchFlightsRequest searchFlightsRequest) {
+    public Order orderFlight(OrderRequest orderRequest) {
+
+        String orderId = UUID.randomUUID().toString();
+        dynamoDbenhancedClient.transactWriteItems(TransactWriteItemsEnhancedRequest
+                .builder()
+                .addPutItem(flightOrderingSystemDynamoDbTable, TransactPutItemEnhancedRequest
+                        .builder(FlightOrderingSystem.class)
+                        .item(FlightOrderingSystem.builder()
+                                .pk(ObjectType.PASSENGER + "#" + orderRequest.getPassengerUid())
+                                .sk(ObjectType.ORDER + "#" + orderId)
+                                .entityType(ObjectType.ORDER.name())
+                                .gsi1pk(ObjectType.FLIGHT + "#" + orderRequest.getFlightNumber())
+                                .gsi1sk(ObjectType.ORDER + "#" + orderId)
+                                .build())
+                        /*.conditionExpression(Expression.builder()
+                                .expression("attribute_exists(PK)")
+                                .build())*/
+                        .build())
+                .addPutItem(flightOrderingSystemDynamoDbTable, TransactPutItemEnhancedRequest
+                        .builder(FlightOrderingSystem.class)
+                        .item(FlightOrderingSystem.builder()
+                                .pk(ObjectType.FLIGHT + "#" + orderRequest.getFlightNumber())
+                                .sk(ObjectType.ORDER + "#" + orderId)
+                                .entityType(ObjectType.ORDER.name())
+                                .gsi1pk(ObjectType.PASSENGER + "#" + orderRequest.getPassengerUid())
+                                .gsi1sk(ObjectType.ORDER + "#" + orderId)
+                                .build())
+                       /* .conditionExpression(Expression.builder()
+                                .expression("attribute_exists(PK)")
+                                .build())*/
+                        .build())
+                .build());
+
         return null;
     }
 
@@ -180,7 +218,7 @@ public class FlightOrderingSystemRepository {
         return ObjectType.DATE + "#" + dateTimeFormatterDate.format(flightTime.truncatedTo(ChronoUnit.DAYS));
     }
 
-    public void test() {
+   /* public void test() {
         DynamoDbTable<Music> musicTable = dynamoDbenhancedClient.table("Music", TableSchema.fromBean(Music.class));
         DescribeTableEnhancedResponse describeTableEnhancedResponse = musicTable.describeTable();
         Music david = musicTable.getItem(Key.builder()
@@ -188,7 +226,7 @@ public class FlightOrderingSystemRepository {
                 .sortValue("Changes")
                 .build());
         int i = 0;
-      /*  musicTable.updateItem(UpdateItemEnhancedRequest.<Music>builder().build());
-        musicTable.query(QueryEnhancedRequest.builder().build())*/
-    }
+      *//*  musicTable.updateItem(UpdateItemEnhancedRequest.<Music>builder().build());
+        musicTable.query(QueryEnhancedRequest.builder().build())*//*
+    }*/
 }

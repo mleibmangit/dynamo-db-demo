@@ -1,6 +1,7 @@
 package com.michael.dynamodbdemo.controller;
 
 import com.michael.dynamodbdemo.controller.model.CreatedObjectResponse;
+import com.michael.dynamodbdemo.controller.model.OrderRequest;
 import com.michael.dynamodbdemo.controller.model.SearchFlightsRequest;
 import com.michael.dynamodbdemo.model.*;
 import com.michael.dynamodbdemo.repository.FlightOrderingSystemRepository;
@@ -28,10 +29,10 @@ public class FlightOrderingSystemController {
         this.flightOrderingSystemRepository = flightOrderingSystemRepository;
     }
 
-    @GetMapping(value = "test")
+    /*@GetMapping(value = "test")
     public void addPupil() {
         flightOrderingSystemRepository.test();
-    }
+    }*/
 
     @PostMapping(value = "addPlane", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CreatedObjectResponse> addPlane(@RequestBody Plane plane) {
@@ -57,9 +58,9 @@ public class FlightOrderingSystemController {
         return ResponseEntity.ok(flightOrderingSystemService.searchFlights(searchFlightsRequest));
     }
 
-    @PostMapping(value = "buyTicket", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Order> buyTicket(@RequestBody SearchFlightsRequest searchFlightsRequest) {
-        log.debug("got buyTicket request {}", searchFlightsRequest);
-        return ResponseEntity.ok(flightOrderingSystemService.buyTicket(searchFlightsRequest));
+    @PostMapping(value = "orderFlight", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Order> orderFlight(@RequestBody OrderRequest orderRequest) {
+        log.debug("got buyTicket request {}", orderRequest);
+        return ResponseEntity.ok(flightOrderingSystemService.orderFlight(orderRequest));
     }
 }
